@@ -60,8 +60,8 @@ export class TypeGpuRenderer implements CubeRenderer {
         this.setupInteraction(container);
 
         console.log('Renderer: Loading face texture...');
-        // await this.loadFaceTexture('/MetaMask-icon-fox-developer-inverted.jpg')
-        await this.loadFaceTexture('/MetaMask-icon-fox.jpg')
+        await this.loadFaceTexture('/MetaMask-icon-fox-developer.jpg')
+        // await this.loadFaceTexture('/MetaMask-icon-fox.jpg')
         // await this.loadFaceTexture('/mona.jpg')
 
         // Initial resize to setup the render target and viewport

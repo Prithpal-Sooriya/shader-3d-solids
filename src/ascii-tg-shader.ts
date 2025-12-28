@@ -100,6 +100,6 @@ fn main(@location(0) uv: vec2f) -> @location(0) vec4f {
     
     let fontColor = textureSample(tFont, sSampler, vec2f(fontU, fontV));
     
-    return vec4f(params.uColor, fontColor.r * sceneColor.a);
+    return vec4f(sceneColor.rgb * fontColor.r, sceneColor.a * fontColor.r);
 }
 `;
