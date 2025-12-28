@@ -60,7 +60,7 @@ export class TypeGpuRenderer implements CubeRenderer {
         this.setupInteraction(container);
 
         console.log('Renderer: Loading face texture...');
-        await this.loadFaceTexture('/mona.jpg');
+        await this.loadFaceTexture('/MetaMask-icon-fox-developer-inverted.jpg')
 
         // Initial resize to setup the render target and viewport
         this.resize(container.clientWidth, container.clientHeight);
@@ -228,20 +228,30 @@ export class TypeGpuRenderer implements CubeRenderer {
 
     private async loadFaceTexture(url: string): Promise<void> {
         if (!this.device) return;
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const image = await createImageBitmap(blob);
+
+        const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+            img.src = url;
+        });
+
+        const bitmap = await createImageBitmap(image, {
+            resizeWidth: 512,
+            resizeHeight: 512,
+            resizeQuality: 'high',
+        });
 
         this.faceTexture = this.device.createTexture({
-            size: [image.width, image.height, 1],
+            size: [bitmap.width, bitmap.height, 1],
             format: 'rgba8unorm',
             usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
         });
 
         this.device.queue.copyExternalImageToTexture(
-            { source: image },
+            { source: bitmap },
             { texture: this.faceTexture },
-            [image.width, image.height]
+            [bitmap.width, bitmap.height]
         );
     }
 
