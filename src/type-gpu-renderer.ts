@@ -250,7 +250,7 @@ export class TypeGpuRenderer implements CubeRenderer {
 
         const data = new Float32Array([
             9.0, // uCharCount (based on CHAR_SET.length)
-            10.0 * window.devicePixelRatio, // uFontSize
+            6.0 * window.devicePixelRatio, // uFontSize
             this.canvas.width, this.canvas.height, // uResolution
             1.0, 1.0, 1.0, 0.0, // uColor (white) + padding
             0.0, 0.0, 0.0, 0.0, // uBgColor (black) + padding
