@@ -1,0 +1,38 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #0d1117;
+  /* Dark GitHub background */
+  overflow: hidden;
+}
+
+#app {
+  width: 80vmin;
+  /* Take 80% of the smaller dimension for a 'tiny bit' scale down */
+  height: 80vmin;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  cursor: grab;
+  margin: auto;
+  /* Center in body */
+  /* Blue radial glow matching GitHub Shop */
+  background: radial-gradient(circle at center, rgba(30, 60, 150, 0.4) 0%, rgba(13, 17, 23, 1) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
