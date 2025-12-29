@@ -74,7 +74,6 @@ export class TypeGpuRenderer implements CubeRenderer {
     private async setupCubeResources(): Promise<void> {
         if (!this.device) return;
 
-        // Use Dodecahedron by default
         const geometry = new DodecahedronGeometry();
         // const geometry = new CubeGeometry();
 
@@ -337,9 +336,7 @@ export class TypeGpuRenderer implements CubeRenderer {
         cubePass.setPipeline(this.cubePipeline);
         cubePass.setBindGroup(0, cubeBindGroup);
         cubePass.setVertexBuffer(0, this.vertexBuffer!);
-        cubePass.setVertexBuffer(0, this.vertexBuffer!);
         cubePass.draw(this.vertexCount);
-        cubePass.end();
         cubePass.end();
 
         // Pass 2: ASCII Post-processing to Screen
