@@ -1,6 +1,8 @@
 import { mat4 } from 'gl-matrix';
 import type { CubeRenderer } from './renderer';
 import { asciiVertexShader, asciiFragmentShader, createAsciiTexture } from './ascii-tg-shader';
+import { DodecahedronGeometry } from './geometries/dodecahedron';
+// import { CubeGeometry } from './geometries/cube';
 
 export class TypeGpuRenderer implements CubeRenderer {
     private canvas: HTMLCanvasElement | null = null;
@@ -16,6 +18,7 @@ export class TypeGpuRenderer implements CubeRenderer {
     private asciiTexture: GPUTexture | null = null;
     private sampler: GPUSampler | null = null;
     private vertexBuffer: GPUBuffer | null = null;
+    private vertexCount: number = 0;
     private faceTexture: GPUTexture | null = null;
 
     // Uniforms
@@ -68,59 +71,15 @@ export class TypeGpuRenderer implements CubeRenderer {
         this.resize(container.clientWidth, container.clientHeight);
     }
 
-    private setupCubeResources(): void {
+    private async setupCubeResources(): Promise<void> {
         if (!this.device) return;
 
-        // Cube vertices (Pos + UV)
-        const vertices = new Float32Array([
-            // Front face
-            -0.8, -0.8, 0.8, 0, 1,
-            0.8, -0.8, 0.8, 1, 1,
-            0.8, 0.8, 0.8, 1, 0,
-            -0.8, -0.8, 0.8, 0, 1,
-            0.8, 0.8, 0.8, 1, 0,
-            -0.8, 0.8, 0.8, 0, 0,
+        // Use Dodecahedron by default
+        const geometry = new DodecahedronGeometry();
+        // const geometry = new CubeGeometry();
 
-            // Back face
-            -0.8, -0.8, -0.8, 1, 1,
-            -0.8, 0.8, -0.8, 1, 0,
-            0.8, 0.8, -0.8, 0, 0,
-            -0.8, -0.8, -0.8, 1, 1,
-            0.8, 0.8, -0.8, 0, 0,
-            0.8, -0.8, -0.8, 0, 1,
-
-            // Top
-            -0.8, 0.8, -0.8, 0, 0,
-            -0.8, 0.8, 0.8, 0, 1,
-            0.8, 0.8, 0.8, 1, 1,
-            -0.8, 0.8, -0.8, 0, 0,
-            0.8, 0.8, 0.8, 1, 1,
-            0.8, 0.8, -0.8, 1, 0,
-
-            // Bottom
-            -0.8, -0.8, -0.8, 0, 1,
-            0.8, -0.8, -0.8, 1, 1,
-            0.8, -0.8, 0.8, 1, 0,
-            -0.8, -0.8, -0.8, 0, 1,
-            0.8, -0.8, 0.8, 1, 0,
-            -0.8, -0.8, 0.8, 0, 0,
-
-            // Right
-            0.8, -0.8, -0.8, 1, 1,
-            0.8, 0.8, -0.8, 1, 0,
-            0.8, 0.8, 0.8, 0, 0,
-            0.8, -0.8, -0.8, 1, 1,
-            0.8, 0.8, 0.8, 0, 0,
-            0.8, -0.8, 0.8, 0, 1,
-
-            // Left
-            -0.8, -0.8, -0.8, 0, 1,
-            -0.8, -0.8, 0.8, 1, 1,
-            -0.8, 0.8, 0.8, 1, 0,
-            -0.8, -0.8, -0.8, 0, 1,
-            -0.8, 0.8, 0.8, 1, 0,
-            -0.8, 0.8, -0.8, 0, 0,
-        ]);
+        const vertices = geometry.getVertices();
+        this.vertexCount = geometry.getVertexCount();
 
         this.vertexBuffer = this.device.createBuffer({
             size: vertices.byteLength,
@@ -378,7 +337,9 @@ export class TypeGpuRenderer implements CubeRenderer {
         cubePass.setPipeline(this.cubePipeline);
         cubePass.setBindGroup(0, cubeBindGroup);
         cubePass.setVertexBuffer(0, this.vertexBuffer!);
-        cubePass.draw(36);
+        cubePass.setVertexBuffer(0, this.vertexBuffer!);
+        cubePass.draw(this.vertexCount);
+        cubePass.end();
         cubePass.end();
 
         // Pass 2: ASCII Post-processing to Screen
